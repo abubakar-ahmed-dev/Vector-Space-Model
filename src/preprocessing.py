@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+from nltk.stem import WordNetLemmatizer
+
 _TOKEN_PATTERN = re.compile(r"[a-z0-9]+(?:'[a-z0-9]+)?")
 
 
@@ -30,6 +32,7 @@ class StopwordLoader:
 class TextPreprocessor:
     def __init__(self, stopwords: Iterable[str]) -> None:
         self.stopwords = {word.lower() for word in stopwords}
+        self.lemmatizer = WordNetLemmatizer()
 
     def preprocess(self, text: str) -> PreprocessingResult:
         normalized = text.lower()
@@ -42,14 +45,4 @@ class TextPreprocessor:
         return self.preprocess(text).tokens
 
     def _lemmatize(self, token: str) -> str:
-        if len(token) <= 3:
-            return token
-        if token.endswith("ies") and len(token) > 4:
-            return token[:-3] + "y"
-        if token.endswith("ing") and len(token) > 5:
-            return token[:-3]
-        if token.endswith("ed") and len(token) > 4:
-            return token[:-2]
-        if token.endswith("s") and not token.endswith("ss") and len(token) > 3:
-            return token[:-1]
-        return token
+        return self.lemmatizer.lemmatize(token)
