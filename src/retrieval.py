@@ -33,7 +33,7 @@ class VSMSearchEngine:
         preprocessor = TextPreprocessor(stopwords)
         return cls(corpus_index, preprocessor, config.alpha_threshold)
 
-    def search(self, query: str, top_k: int = 10, alpha_threshold: float | None = None) -> list[SearchResult]:
+    def search(self, query: str, top_k: int | None = None, alpha_threshold: float | None = None) -> list[SearchResult]:
         query_tokens = self.preprocessor.preprocess_tokens(query)
         if not query_tokens:
             return []
@@ -82,6 +82,8 @@ class VSMSearchEngine:
             )
 
         results.sort(key=lambda result: (-result.score, result.doc_id))
+        if top_k is None:
+            return results
         return results[:top_k]
 
     def explain_query(self, query: str) -> dict[str, object]:

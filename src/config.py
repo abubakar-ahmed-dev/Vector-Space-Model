@@ -11,7 +11,7 @@ class AssignmentConfig:
     index_dir: Path
     min_term_frequency: int = 2
     min_document_frequency: int = 2
-    alpha_threshold: float = 0.005
+    alpha_threshold: float = 0.004
 
 
 def default_config() -> AssignmentConfig:
