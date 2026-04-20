@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import sqrt
-from pathlib import Path
 from typing import Iterable
 
 from .config import AssignmentConfig, default_config
@@ -16,7 +15,6 @@ class SearchResult:
     title: str
     path: str
     score: float
-    matched_terms: list[str]
 
 
 class VSMSearchEngine:
@@ -77,7 +75,6 @@ class VSMSearchEngine:
                     title=document.title,
                     path=document.path,
                     score=similarity,
-                    matched_terms=sorted(matched_terms.get(doc_id, set())),
                 )
             )
 
@@ -85,16 +82,6 @@ class VSMSearchEngine:
         if top_k is None:
             return results
         return results[:top_k]
-
-    def explain_query(self, query: str) -> dict[str, object]:
-        tokens = self.preprocessor.preprocess_tokens(query)
-        vector = self._build_query_vector(tokens)
-        return {
-            "query": query,
-            "tokens": tokens,
-            "vector": vector,
-            "vocabulary_hits": [term for term in tokens if term in self.corpus_index.vocabulary],
-        }
 
     def _build_query_vector(self, tokens: Iterable[str]) -> dict[str, float]:
         token_counts: dict[str, int] = {}

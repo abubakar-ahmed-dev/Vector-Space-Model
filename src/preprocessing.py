@@ -5,8 +5,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+import nltk
 from nltk import pos_tag
 from nltk.corpus import wordnet
+from nltk.data import find
 from nltk.stem import WordNetLemmatizer
 
 _TOKEN_PATTERN = re.compile(r"[a-z0-9]+(?:'[a-z0-9]+)?")
@@ -33,6 +35,7 @@ class StopwordLoader:
 
 class TextPreprocessor:
     def __init__(self, stopwords: Iterable[str]) -> None:
+        self._ensure_nltk_resources()
         self.stopwords = {word.lower() for word in stopwords}
         self.lemmatizer = WordNetLemmatizer()
 
@@ -65,3 +68,18 @@ class TextPreprocessor:
         if tag.startswith("R"):
             return wordnet.ADV
         return None
+
+    @staticmethod
+    def _ensure_nltk_resources() -> None:
+        required_resources = (
+            ("taggers/averaged_perceptron_tagger_eng", "averaged_perceptron_tagger_eng"),
+            ("taggers/averaged_perceptron_tagger", "averaged_perceptron_tagger"),
+            ("corpora/wordnet", "wordnet"),
+            ("corpora/omw-1.4", "omw-1.4"),
+        )
+
+        for resource_path, download_name in required_resources:
+            try:
+                find(resource_path)
+            except LookupError:
+                nltk.download(download_name, quiet=True)

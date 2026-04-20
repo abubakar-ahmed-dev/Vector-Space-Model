@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 
 @dataclass(frozen=True)
@@ -31,9 +30,3 @@ class CorpusLoader:
                 )
             )
         return documents
-
-    def count_documents(self) -> int:
-        return len(self.discover_documents())
-
-    def iter_paths(self) -> Iterable[Path]:
-        yield from sorted(self.corpus_dir.glob("*.txt"))
